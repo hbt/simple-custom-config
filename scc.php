@@ -33,7 +33,7 @@ function getDefaultKeys()
         'postfix' => '%%',
         'prefix' => '%%',
         'tmpl' => '.template',
-        'tmpl_regex' => '/.template./'
+        'tmpl_regex' => '/.\.template\../'
     );
 }
 
@@ -69,14 +69,17 @@ function isLineValid($str)
 function replaceFiles($data)
 {
     // get matched files
-    $directory = new RecursiveDirectoryIterator(__DIR__);
+    $directory = new RecursiveDirectoryIterator(getcwd());
     $flattened = new RecursiveIteratorIterator($directory);
 
     $files = new RegexIterator($flattened, $data['tmpl_regex']);
 
     foreach ($files as $file)
     {
-        replaceFile($file, $data);
+        if ($file->isFile() && preg_match($data['tmpl_regex'], $file->getFilename()) && !preg_match('/\.svn/', $file->getFilename()))
+        {
+            replaceFile($file, $data);
+        }
     }
 }
 
@@ -84,14 +87,15 @@ function replaceFile($file, $data)
 {
     // validate
     $filepath = $file->getPathName();
-    if(!file_exists($filepath)) return;
+    if (!file_exists($filepath))
+        return;
 
     // read
     $content = file_get_contents($filepath);
     $ret = $content;
 
     // search & replace
-    foreach($data as $key => $value)
+    foreach ($data as $key => $value)
     {
         $fkey = $data['prefix'] . $key . $data['postfix'];
         $ret = str_replace($fkey, $value, $ret);
@@ -101,7 +105,8 @@ function replaceFile($file, $data)
     $nfilename = str_replace($data['tmpl'], '', $file->getFileName());
     $nfilepath = str_replace($file->getFileName(), $nfilename, $filepath);
 
-    if($ret !== $content) file_put_contents($nfilepath, $ret);
+    if ($ret !== $content)
+        file_put_contents($nfilepath, $ret);
 
     return $ret;
 }
