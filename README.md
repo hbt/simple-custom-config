@@ -2,7 +2,7 @@
 
 ## What it does?
 
-- Reads key/value file "scc_config.txt" -- provide as argument to overwrite if name/location is different
+- Reads key/value file "scc_config.txt" 
 - Scans any template files in the current path
 - Replaces keys with values
 - Create the files based on template
