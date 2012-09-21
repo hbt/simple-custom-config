@@ -45,7 +45,7 @@ function extractDataAsArray($templateFilename)
     $content = file_get_contents($templateFilename);
 
     // replace defaults
-    $lines = explode("\n", $content);
+    $lines = explode(PHP_EOL, $content);
     foreach ($lines as $line)
     {
         if (isLineValid($line))
@@ -78,9 +78,19 @@ function replaceFiles($data)
     {
         if ($file->isFile() && preg_match($data['tmpl_regex'], $file->getFilename()) && !preg_match('/\.svn/', $file->getFilename()))
         {
-            replaceFile($file, $data);
+            $res = replaceFile($file, $data);
+            if($res)
+            {
+                echo PHP_EOL . "Updated " . getCleanFilename($data['tmpl'], $file->getFileName());
+            }
         }
     }
+}
+
+function getCleanFilename($pattern, $filename)
+{
+    $ret = str_replace($pattern, '', $filename);
+    return $ret;
 }
 
 function replaceFile($file, $data)
@@ -102,11 +112,13 @@ function replaceFile($file, $data)
     }
 
     // write to file
-    $nfilename = str_replace($data['tmpl'], '', $file->getFileName());
+    $nfilename = getCleanFilename($data['tmpl'], $file->getFileName());
     $nfilepath = str_replace($file->getFileName(), $nfilename, $filepath);
 
     if ($ret !== $content)
         file_put_contents($nfilepath, $ret);
+    else
+        $ret = null;
 
     return $ret;
 }
