@@ -81,7 +81,7 @@ function replaceFiles($data)
             $res = replaceFile($file, $data);
             if($res)
             {
-                echo PHP_EOL . "Updated " . getCleanFilename($data['tmpl'], $file->getFileName());
+                echo PHP_EOL . "Updated " . getCleanFilename($data['tmpl'], $file->getFileName()) . PHP_EOL;
             }
         }
     }
