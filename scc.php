@@ -115,7 +115,13 @@ function replaceFile($file, $data)
     $nfilename = getCleanFilename($data['tmpl'], $file->getFileName());
     $nfilepath = str_replace($file->getFileName(), $nfilename, $filepath);
 
-    if ($ret !== $content)
+    $oldcontent = null;
+    if(file_exists($nfilepath))
+    {
+        $oldcontent = file_get_contents($nfilepath);
+    }
+
+    if ($oldcontent !== $ret)
         file_put_contents($nfilepath, $ret);
     else
         $ret = null;
